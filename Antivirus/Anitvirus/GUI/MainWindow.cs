@@ -13,10 +13,11 @@ namespace Antivirus.GUI
         [Builder.Object] private Window Window;
         [Builder.Object] private Button SearchBtn;
         [Builder.Object] private Button AddSignatureBtn;
-        [Builder.Object] private Switch LogSwch;
+   
         [Builder.Object] private Entry PathEntry;    
         [Builder.Object] private TextView SignatureEntry;
-        
+        [Builder.Object] private Entry AddPathEntry;
+
         private bool disposed = false;
         private bool log = false;
         private Builder GuiBuilder;
@@ -47,26 +48,42 @@ namespace Antivirus.GUI
         private void ClickedSearchButton(object sender, EventArgs a)
         {
             var result = _scannerService.Scan(PathEntry.Text);
-            if (LogSwch.State)
-            {
+           //if (LogSwch.State)
+           //{
                 new LogWindow(result).Show();
-            }
-            
+           // }
+           // 
         }
         
         private void ClickedAddButton(object sender, EventArgs a)
         {
-            var signature = SignatureEntry.Buffer.Text.Split('=');
-
+            string str = string.Empty;
+            var signature = AddPathEntry.Buffer.Text.Split('=');
             _signatureRepository.Add(new Signature()
             {
                 ActualSignature = signature[1],
                 SignatureName = signature[0]
             });
-            
-            SignatureEntry.Buffer.Text = string.Empty;
+            AddPathEntry.Buffer.Text = string.Empty;
+            str += $"{signature[0]} = {signature[1]}";
+            str += Environment.NewLine;
+            SignatureEntry.Buffer.Text += str; 
+           
         }
-            
+
+        /*private void ClickedShowButton(object sender, EventArgs a)
+        {
+            string str=string.Empty;
+            //  var signature = _signatureRepository;
+           // SignatureEntry.Buffer.Text = _signatureRepository.GetAllItems();
+            foreach (var item in _signatureRepository.GetAllItems())
+            {
+                str += $"{item.SignatureName} = {item.ActualSignature}";
+                str += Environment.NewLine;
+            }
+            SignatureEntry.Buffer.Text = str;
+        }
+        */
         public void Dispose(bool disposing)
         {
             if(!this.disposed)
